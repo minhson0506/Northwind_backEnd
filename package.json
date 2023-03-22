@@ -1,0 +1,21 @@
+{
+  "name": "northwind_backend",
+  "version": "1.0.0",
+  "description": "Northwind database",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node src/index.ts",
+    "dev": "nodemon src/index.ts",
+    "build": "tsc",
+    "lint": "eslint --fix src test",
+    "test": "jest --detectOpenHandles --forceExit"
+  },
+  "author": "Son Dang",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/node": "^18.15.5",
+    "ts-node": "^10.9.1",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.0.2"
+  }
+}
