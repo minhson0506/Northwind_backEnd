@@ -19,8 +19,20 @@ const getAllOrders = async (): Promise<Order[]> => {
     return response as Promise<Order[]>;
 }
 
+const getOrderById = async (id: number): Promise<Order> => {
+    const response = new Promise((resolve, reject) => {
+        db.get(`SELECT * FROM Orders WHERE orderId = ${id}`, [], (err: string, row: Order) => {
+            if (err) {
+                throw new CustomError(err, 404);
+            } else {
+                resolve(row);
+            }
+        });
+    });
+    return response as Promise<Order>;
+}
+
 const getOrderDetailById = async (id: number): Promise<OrderDetail[]> => {
-    console.log('get detail', id)
     const response = new Promise((resolve, reject) => {
         db.all(`SELECT * FROM "Order Details" WHERE orderId = ${id}`, [], (err: string, rows: OrderDetail[]) => {
             if (err) {
@@ -46,13 +58,29 @@ const getOrderDetailByProductId = async (productID: number): Promise<OrderDetail
     return response as Promise<OrderDetail[]>;
 }
 
-const getOrderWithDetailByProductName = async (productName: string): Promise<OrderDetail[]> => {
+const getOrderWithDetailByProductName = async (productName: string): Promise<OrderWithDetails[]> => {
+    console.log('productName', productName)
     const products = await getProductByProductName(productName);
-    const orderDetails = await Promise.all(products.map(async (product) => {
-        const orderDetail = await getOrderDetailByProductId(product.ProductID);
-        return orderDetail;
+
+    // get order details for each product
+    const orderDetailFromProduct = await Promise.all(products.map(async (product) => {
+        return await getOrderDetailByProductId(product.ProductID);
     }));
-    return orderDetails as unknown as OrderDetail[];
+
+    // convert array[][] of product to array[][] of order detail
+    const orderDetails = orderDetailFromProduct.flatMap((orderDetail) => orderDetail);
+    const orderDetailUnique = [...new Map(orderDetails.map(item => [item['OrderID'], item])).values()];
+    
+
+    //get order detail for each order id
+    const orders: OrderWithDetails[] = await Promise.all(orderDetailUnique.map(async (orderDetail) => {
+        const result = await getOrderById(orderDetail.OrderID);
+        return {...result, OrderDetails: orderDetails.filter((value)=> value.OrderID === orderDetail.OrderID)} as OrderWithDetails;
+    }));
+
+    console.log('orders', orders)
+
+    return orders;
 }
 
 export {getAllOrders, getOrderDetailById, getOrderWithDetailByProductName}

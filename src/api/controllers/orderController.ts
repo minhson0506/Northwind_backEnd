@@ -5,7 +5,7 @@ import {getAllOrders, getOrderDetailById, getOrderWithDetailByProductName} from 
 import {getProductByProductName} from '../models/productModel';
 
 const orderListGet = async (req: Request, res: Response, next: NextFunction) => {
-    const result = await getOrderWithDetailByProductName('chai')
+    const result = await getOrderWithDetailByProductName('cha')
     console.log('result', result)
     try {
         const orders = await getAllOrders() as Order[];
@@ -17,9 +17,10 @@ const orderListGet = async (req: Request, res: Response, next: NextFunction) => 
     }
 }
 
-const orderSearchGet = async (req: Request<{search: string}, {}, {}>, res: Response, next: NextFunction) => {
+const orderSearchGet = async (req: Request<{productName: string}, {}, {}>, res: Response, next: NextFunction) => {
     try {
-        const product = await getOrderWithDetailByProductName(req.params.search);
+        console.log('req.params.search', req.params.productName) 
+        const product = await getOrderWithDetailByProductName(req.params.productName);
         res.json(product);
     } catch (error) {
         next(error);
