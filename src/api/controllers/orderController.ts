@@ -9,9 +9,7 @@ const orderListGet = async (req: Request<{shipped: string}, {},{}>, res: Respons
     console.log('result', result)
     try {
         const orders = await getAllOrders(req.params.shipped) as Order[];
-        const orderDetails = await getOrderDetailById(orders[0].OrderID)
-        const orderWithDetails: OrderWithDetails = {...orders[0], OrderDetails: orderDetails}
-        res.json(orderWithDetails);
+        res.json(orders);
     } catch (error) {
         next(error);
     }
@@ -19,9 +17,8 @@ const orderListGet = async (req: Request<{shipped: string}, {},{}>, res: Respons
 
 const orderSearchGet = async (req: Request<{shipped: string, productName: string}, {}, {}>, res: Response, next: NextFunction) => {
     try {
-        console.log('req.params.search', req.params.productName) 
-        const product = await getOrderWithDetailByProductName(req.params.shipped, req.params.productName);
-        res.json(product);
+        const orders = await getOrderWithDetailByProductName(req.params.shipped, req.params.productName);
+        res.json(orders);
     } catch (error) {
         next(error);
     }

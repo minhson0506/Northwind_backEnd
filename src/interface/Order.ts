@@ -1,8 +1,9 @@
+import {Customer} from "./Customer";
 import {OrderDetail} from "./OrderDetail";
 
 interface Order {
     OrderID: number;
-    CustomerID: number | null;
+    CustomerID: string | null;
     EmployeeID: number | null;
     OrderDate: string | null;
     RequiredDate: string | null;
@@ -19,6 +20,7 @@ interface Order {
 
 interface OrderWithDetails extends Order {
     OrderDetails: OrderDetail[];
+    CustomerDetails: Customer | null;
 }
 
 export {Order, OrderWithDetails}
