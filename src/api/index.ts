@@ -1,14 +1,15 @@
 import express from 'express';
-import createDbConnection from '../database/db';
+import MessageResponse from '../interface/MessageResponse';
+import orderRoute from './routers/orderRoute';
 
 const router = express.Router();
 
-router.get('/', (req, res) => {
+router.get<{}, MessageResponse>('/', (req, res) => {
     res.json({
-        message: 'API northwind: api/v1',
+      message: 'routes: northwind database',
     });
-});
+  });
 
-let db = createDbConnection()
+router.use('/order', orderRoute);
 
 export default router;
