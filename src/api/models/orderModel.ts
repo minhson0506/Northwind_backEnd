@@ -6,22 +6,37 @@ import {getProductByProductName} from "./productModel";
 
 const db = createDbConnection();
 
-const getAllOrders = async (): Promise<Order[]> => {
-    const response = new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM Orders WHERE orderId = 10249`, [], (err: string, rows: Order[]) => {
-            if (err) {
-                throw new CustomError(err, 404);
-            } else {
-                resolve(rows);
-            }
+const getAllOrders = async (shipped: string): Promise<Order[]> => {
+    const shippedBool = shipped === 'true' ? true : false;
+    if (!shipped) {
+        const response = new Promise((resolve, reject) => {
+            db.all(`SELECT * FROM Orders ShippedDate IS NULL`, [], (err: string, rows: Order[]) => {
+                if (err) {
+                    throw new CustomError(err, 404);
+                } else {
+                    resolve(rows);
+                }
+            });
         });
-    });
-    return response as Promise<Order[]>;
+        return response as Promise<Order[]>;
+    } else {
+        const response = new Promise((resolve, reject) => {
+            db.all(`SELECT * FROM Orders WHERE ShippedDate IS NOT NULL`, [], (err: string, rows: Order[]) => {
+                if (err) {
+                    throw new CustomError(err, 404);
+                } else {
+                    resolve(rows);
+                }
+            });
+        });
+        return response as Promise<Order[]>;
+    }
 }
 
-const getOrderById = async (id: number): Promise<Order> => {
+const getOrderById = async (shipped: boolean, id: number): Promise<Order> => {
+    if (!shipped) {
     const response = new Promise((resolve, reject) => {
-        db.get(`SELECT * FROM Orders WHERE orderId = ${id}`, [], (err: string, row: Order) => {
+        db.get(`SELECT * FROM Orders WHERE orderId = ${id} AND ShippedDate IS NULL`, [], (err: string, row: Order) => {
             if (err) {
                 throw new CustomError(err, 404);
             } else {
@@ -30,6 +45,18 @@ const getOrderById = async (id: number): Promise<Order> => {
         });
     });
     return response as Promise<Order>;
+    } else {
+        const response = new Promise((resolve, reject) => {
+            db.get(`SELECT * FROM Orders WHERE orderId = ${id} AND ShippedDate IS NOT NULL`, [], (err: string, row: Order) => {
+                if (err) {
+                    throw new CustomError(err, 404);
+                } else {
+                    resolve(row);
+                }
+            });
+        });
+        return response as Promise<Order>;
+    }
 }
 
 const getOrderDetailById = async (id: number): Promise<OrderDetail[]> => {
@@ -58,8 +85,9 @@ const getOrderDetailByProductId = async (productID: number): Promise<OrderDetail
     return response as Promise<OrderDetail[]>;
 }
 
-const getOrderWithDetailByProductName = async (productName: string): Promise<OrderWithDetails[]> => {
+const getOrderWithDetailByProductName = async (shipped: string, productName: string): Promise<OrderWithDetails[]> => {
     console.log('productName', productName)
+    const shippedBool = shipped === 'true' ? true : false;
     const products = await getProductByProductName(productName);
 
     // get order details for each product
@@ -70,17 +98,20 @@ const getOrderWithDetailByProductName = async (productName: string): Promise<Ord
     // convert array[][] of product to array[][] of order detail
     const orderDetails = orderDetailFromProduct.flatMap((orderDetail) => orderDetail);
     const orderDetailUnique = [...new Map(orderDetails.map(item => [item['OrderID'], item])).values()];
-    
 
-    //get order detail for each order id
-    const orders: OrderWithDetails[] = await Promise.all(orderDetailUnique.map(async (orderDetail) => {
-        const result = await getOrderById(orderDetail.OrderID);
-        return {...result, OrderDetails: orderDetails.filter((value)=> value.OrderID === orderDetail.OrderID)} as OrderWithDetails;
+
+    //get order detail for each order id and remove order id that does not exist when get with null value
+    const orders = await Promise.all(orderDetailUnique.map(async (orderDetail) => {
+        const result = await getOrderById(shippedBool, orderDetail.OrderID);
+        if (!result) {
+            return;
+        }
+        return {...result, OrderDetails: orderDetails.filter((value) => value.OrderID === orderDetail.OrderID)} as OrderWithDetails;
     }));
 
-    console.log('orders', orders)
+    const result = orders.filter((order) => order !== undefined);
 
-    return orders;
+    return result as OrderWithDetails[];
 }
 
 export {getAllOrders, getOrderDetailById, getOrderWithDetailByProductName}
