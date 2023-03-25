@@ -1,3 +1,5 @@
+import {Product} from "./Product";
+
 interface OrderDetail {
     OrderID: number;
     ProductID: number;
@@ -6,4 +8,8 @@ interface OrderDetail {
     Discount: number;
 }
 
-export {OrderDetail}
+interface OrderDetailWithProduct extends OrderDetail {
+    ProductDetails: Product;
+}
+
+export {OrderDetail, OrderDetailWithProduct}

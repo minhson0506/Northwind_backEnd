@@ -1,6 +1,5 @@
 import CustomError from "../../classes/CustomError";
 import createDbConnection from "../../database/db";
-import {OrderDetail} from "../../interface/OrderDetail";
 import {Product} from "../../interface/Product";
 
 const db = createDbConnection();
@@ -18,4 +17,17 @@ const getProductByProductName = async (productName: string): Promise<Product[]> 
     return response as Promise<Product[]>;
 }
 
-export {getProductByProductName}
+const getProductById = async (id: number): Promise<Product> => {
+    const response = new Promise((resolve, reject) => {
+        db.get(`SELECT * FROM Products WHERE ProductID = ${id}`, (err: string, row: Product) => {
+            if (err) {
+                throw new CustomError(err, 404);
+            } else {
+                resolve(row);
+            }
+        });
+    });
+    return response as Promise<Product>;
+}
+
+export {getProductByProductName, getProductById}

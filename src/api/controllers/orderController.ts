@@ -1,8 +1,6 @@
 import {Request, Response, NextFunction} from 'express';
-import {Order, OrderWithDetails} from '../../interface/Order';
-import {OrderDetail} from '../../interface/OrderDetail';
-import {getAllOrders, getOrderDetailById, getOrderWithDetailByProductName} from '../models/orderModel';
-import {getProductByProductName} from '../models/productModel';
+import {Order} from '../../interface/Order';
+import {getAllOrders, getOrderWithDetailByProductName} from '../models/orderModel';
 
 const orderListGet = async (req: Request<{shipped: string}, {},{}>, res: Response, next: NextFunction) => {
     const result = await getOrderWithDetailByProductName(req.params.shipped, 'cha')
