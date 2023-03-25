@@ -10,6 +10,6 @@ router.get<{}, MessageResponse>('/', (req, res) => {
     });
 });
 
-router.use('/order', orderRoute);
+router.use('/orders', orderRoute);
 
 export default router;
