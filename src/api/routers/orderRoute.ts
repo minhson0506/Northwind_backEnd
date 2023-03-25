@@ -1,11 +1,9 @@
 import express from 'express';
-import {orderListGet, orderSearchGet} from '../controllers/orderController';
+import {orderListGet} from '../controllers/orderController';
 
 const router = express.Router();
 
-router.route('/:shipped').get(orderListGet);
-
-router.route('/:shipped/:productName').get(orderSearchGet);
-
+// define route for get all orders
+router.route('/').get(orderListGet);
 
 export default router;

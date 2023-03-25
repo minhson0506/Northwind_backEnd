@@ -5,7 +5,9 @@ const sqlite3 = require('sqlite3').verbose();
 const filepath = `${__dirname}/northwind.db`;
 const fs = require("fs");
 
+// create connection to database
 const createDbConnection = () => {
+    // check if database file exists
     if (fs.existsSync(filepath)) {
         console.log('Database file exists');
         const db = new sqlite3.Database(filepath);
