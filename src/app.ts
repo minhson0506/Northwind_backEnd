@@ -10,8 +10,21 @@ import api from './api'
 const app = express()
 app.use(morgan('dev'))
 app.use(helmet())
-app.use(cors())
+app.use(cors({
+    origin: '*'
+}))
+
 app.use(express.json())
+
+app.use(function (req, res, next) {
+    res.setHeader('Access-Control-Allow-Origin', '*');
+    res.setHeader('Access-Control-Allow-Methods', 'GET');
+    res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type');
+    res.setHeader('Access-Control-Allow-Credentials', "true");
+
+    // Pass to next layer of middleware
+    next();
+});
 
 app.get<{}, MessageResponse>('/', (req, res) => {
     res.json({

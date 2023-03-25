@@ -2,21 +2,10 @@ import CustomError from "../../classes/CustomError";
 import createDbConnection from "../../database/db";
 import {Product} from "../../interface/Product";
 
+// create connection to database
 const db = createDbConnection();
 
-const getProductByProductName = async (productName: string): Promise<Product[]> => {
-    const response = new Promise((resolve, reject) => {
-        db.all(`SELECT * FROM Products WHERE ProductName LIKE '%${productName}%'`, [], (err: string, rows: Product[]) => {
-            if (err) {
-                throw new CustomError(err, 404);
-            } else {
-                resolve(rows);
-            }
-        });
-    });
-    return response as Promise<Product[]>;
-}
-
+// get product by id
 const getProductById = async (id: number): Promise<Product> => {
     const response = new Promise((resolve, reject) => {
         db.get(`SELECT * FROM Products WHERE ProductID = ${id}`, (err: string, row: Product) => {
@@ -30,4 +19,4 @@ const getProductById = async (id: number): Promise<Product> => {
     return response as Promise<Product>;
 }
 
-export {getProductByProductName, getProductById}
+export {getProductById}
