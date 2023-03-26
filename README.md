@@ -126,3 +126,7 @@ $ cd northwind_backEnd
 $ npm i
 $ npm run dev
 ```
+3. Test project:
+```
+$ npm run test
+```
