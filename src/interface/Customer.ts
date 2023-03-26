@@ -1,5 +1,5 @@
 interface Customer {
-    CustomnerID: string;
+    CustomerID: string;
     CompanyName: string;
     ContactName: string | null;
     ContactTitle: string | null;

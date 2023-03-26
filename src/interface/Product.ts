@@ -8,7 +8,7 @@ interface Product {
     UnitsInStock: number | null;
     UnitsOnOrder: number | null;
     ReorderLevel: number | null;
-    Discontinued: number;
+    Discontinued: string;
 }
 
 export {Product}
